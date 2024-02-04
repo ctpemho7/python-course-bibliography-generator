@@ -2,6 +2,7 @@
 Запуск приложения.
 """
 from enum import Enum, unique
+from typing import Dict, Type
 
 import click
 
@@ -26,7 +27,7 @@ class CitationEnum(Enum):
     APA = "apa"  # American Psychological Association
 
 
-formatters_map = {
+formatters_map: Dict[str, Type[GOSTCitationFormatter | APACitationFormatter]] = {
     CitationEnum.GOST.name: GOSTCitationFormatter,
     CitationEnum.APA.name: APACitationFormatter,
 }
@@ -83,7 +84,11 @@ def process_input(
         path_output,
     )
 
-    formatter = formatters_map.get(citation)
+    if citation not in formatters_map:
+        logger.error("При обработке команды возникла ошибка: неподдерживаемый тип")
+        logger.info("Файл отредактирован согласно ГОСТ")
+
+    formatter = formatters_map.get(citation, GOSTCitationFormatter)
     models = SourcesReader(path_input).read()
     formatted_models = tuple(str(item) for item in formatter(models).format())
 
