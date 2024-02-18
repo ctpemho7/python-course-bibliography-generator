@@ -7,7 +7,13 @@ from typing import Type
 import openpyxl
 from openpyxl.workbook import Workbook
 
-from formatters.models import BookModel, InternetResourceModel, ArticlesCollectionModel
+from formatters.models import (
+    BookModel,
+    InternetResourceModel,
+    ArticlesCollectionModel,
+    NormativeActModel,
+    JournalArticleModel,
+)
 from logger import get_logger
 from readers.base import BaseReader
 
@@ -90,6 +96,59 @@ class ArticlesCollectionReader(BaseReader):
         }
 
 
+class NormativeActReader(BaseReader):
+    """
+    Чтение модели нормативного акта.
+    """
+
+    @property
+    def model(self) -> Type[NormativeActModel]:
+        return NormativeActModel
+
+    @property
+    def sheet(self) -> str:
+        return " Закон, нормативный акт и т.п."
+
+    @property
+    def attributes(self) -> dict:
+        return {
+            "type": {0: str},
+            "title": {1: str},
+            "adoption_date": {2: str},
+            "act_numer": {3: str},
+            "source": {4: str},
+            "publication_year": {5: int},
+            "source_number": {6: int},
+            "article_number": {7: int},
+            "revision": {8: str},
+        }
+
+
+class JournalArticleReader(BaseReader):
+    """
+    Чтение модели статьи из журнала.
+    """
+
+    @property
+    def model(self) -> Type[JournalArticleModel]:
+        return JournalArticleModel
+
+    @property
+    def sheet(self) -> str:
+        return "Статья из журнала"
+
+    @property
+    def attributes(self) -> dict:
+        return {
+            "authors": {0: str},
+            "article_title": {1: str},
+            "journal_name": {2: str},
+            "publication_year": {3: int},
+            "journal_number": {4: int},
+            "pages": {5: str},
+        }
+
+
 class SourcesReader:
     """
     Чтение из источника данных.
@@ -100,6 +159,8 @@ class SourcesReader:
         BookReader,
         InternetResourceReader,
         ArticlesCollectionReader,
+        NormativeActReader,
+        JournalArticleReader,
     ]
 
     def __init__(self, path: str) -> None:

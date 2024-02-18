@@ -9,16 +9,16 @@ from formatters.models import (
     NormativeActModel,
     JournalArticleModel,
 )
-from formatters.styles.gost import (
-    GOSTBook,
-    GOSTInternetResource,
-    GOSTCollectionArticle,
-    GOSTNormativeAct,
-    GOSTJournalArticle,
+from formatters.styles.apa import (
+    APABook,
+    APAInternetResource,
+    APACollectionArticle,
+    APANormativeAct,
+    APAJournalArticle,
 )
 
 
-class TestGOST:
+class TestAPA:
     """
     Тестирование оформления списка источников согласно ГОСТ Р 7.0.5-2008.
     """
@@ -31,11 +31,11 @@ class TestGOST:
         :return:
         """
 
-        model = GOSTBook(book_model_fixture)
+        model = APABook(book_model_fixture)
 
         assert (
             model.formatted
-            == "Иванов И.М., Петров С.Н. Наука как искусство. – 3-е изд. – СПб.: Просвещение, 2020. – 999 с."
+            == "Иванов И.М., Петров С.Н. (2020). Наука как искусство. Просвещение."
         )
 
     def test_internet_resource(
@@ -48,11 +48,11 @@ class TestGOST:
         :return:
         """
 
-        model = GOSTInternetResource(internet_resource_model_fixture)
+        model = APAInternetResource(internet_resource_model_fixture)
 
         assert (
             model.formatted
-            == "Наука как искусство // Ведомости URL: https://www.vedomosti.ru (дата обращения: 01.01.2021)."
+            == "Наука как искусство. (n.d.). Ведомости. Retrieved 01.01.2021, from https://www.vedomosti.ru"
         )
 
     def test_articles_collection(
@@ -65,11 +65,11 @@ class TestGOST:
         :return:
         """
 
-        model = GOSTCollectionArticle(articles_collection_model_fixture)
+        model = APACollectionArticle(articles_collection_model_fixture)
 
         assert (
             model.formatted
-            == "Иванов И.М., Петров С.Н. Наука как искусство // Сборник научных трудов. – СПб.: АСТ, 2020. – С. 25-30."
+            == "Иванов И.М., Петров С.Н. (2020). Наука как искусство. Сборник научных трудов, 25-30."
         )
 
     def test_journal_article(
@@ -82,12 +82,11 @@ class TestGOST:
         :return:
         """
 
-        model = GOSTJournalArticle(journal_article_model_fixture)
+        model = APAJournalArticle(journal_article_model_fixture)
 
         assert (
-            model.formatted
-            == "Анохин Н. В., Протас Н. Г., Шмаков Е. К. ИИС – шаг вперед, дающий рывок в "
-            "будущее // Идеи и идеалы. 2021. № 3, С. 266-280."
+            model.formatted == "Анохин Н. В., Протас Н. Г., Шмаков Е. К. (2021). "
+            "ИИС – шаг вперед, дающий рывок в будущее. Идеи и идеалы, 3, 266-280."
         )
 
     def test_normative_act(
@@ -100,12 +99,11 @@ class TestGOST:
         :return:
         """
 
-        model = GOSTNormativeAct(normative_act_model_fixture)
+        model = APANormativeAct(normative_act_model_fixture)
 
         assert (
             model.formatted
-            == "О персональных данных : Федеральный закон Российской Федерации от 27.07.2006 "
-            "№ 152-ФЗ // Собрание законодательства Российской Федерации. 2006. №29. Ст. 5233. в ред. от 06.02.2023."
+            == "О персональных данных, Федеральный закон Российской Федерации No. 152-ФЗ, Stat. 5233 (27.07.2006)."
         )
 
     def test_citation_formatter(
@@ -128,16 +126,16 @@ class TestGOST:
         """
 
         models = [
-            GOSTBook(book_model_fixture),
-            GOSTInternetResource(internet_resource_model_fixture),
-            GOSTCollectionArticle(articles_collection_model_fixture),
-            GOSTNormativeAct(normative_act_model_fixture),
-            GOSTJournalArticle(journal_article_model_fixture),
+            APABook(book_model_fixture),
+            APAInternetResource(internet_resource_model_fixture),
+            APACollectionArticle(articles_collection_model_fixture),
+            APANormativeAct(normative_act_model_fixture),
+            APAJournalArticle(journal_article_model_fixture),
         ]
         result = BaseCitationFormatter(models).format()
         # тестирование сортировки списка источников
         assert result[0] == models[4]
-        assert result[1] == models[2]
-        assert result[2] == models[0]
+        assert result[1] == models[0]
+        assert result[2] == models[2]
         assert result[3] == models[1]
         assert result[4] == models[3]
